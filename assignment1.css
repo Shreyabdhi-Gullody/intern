@@ -1,0 +1,79 @@
+body{
+    background-color: #f5f3f2;
+}
+/* Apply basic styling to the form */
+.checkout-form {
+    max-width: 50%;
+    margin: 0 auto;
+    margin-left: 20px;
+    padding: 20px;
+}
+
+/* Style the labels */
+.checkout-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Style the input fields */
+.checkout-form input[type="text"],
+.checkout-form input[type="email"],
+.checkout-form input[type="select"],
+.checkout-form input[type="checkbox"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style the submit button */
+.checkout-form button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Center the submit button */
+.checkout-form button[type="submit"] {
+    display: block;
+    margin: 10px;
+}
+
+/* Add some spacing between sections */
+.checkout-form h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* Display first name and last name on the same line */
+.checkout-form #first-name,
+.checkout-form #last-name {
+    display: inline-block;
+    width: calc(50% - 80px);
+    margin-right: 10px;
+}
+
+label {
+    display: inline-block;
+    vertical-align: middle; /* This helps with vertical alignment */
+    /* Add more styling as needed */
+}
+
+.check{
+    margin-left: -48%;
+    margin-right: -46%;
+}
+
+.single-row{
+    width: 100%;
+}
+
+.single-column{
+width: 50%;
+float: left;
+}

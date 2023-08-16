@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assignment1.css">
+    <title>Checkout</title>
+    <style>
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    
+        .input-container label {
+            flex: 1;
+        }
+    
+        .input-container input {
+            flex: 2;
+        }
+    </style>
+</head>
+<body>
+    <form class="checkout-form">
+        <h2>Billing address</h2>
+        <label for="first-name">First name</label>
+        <input type="text" id="first-name" name="first-name" required>
+        <label for="last-name">Last name</label>
+        <input type="text" id="last-name" name="last-name" required>
+
+        <label for="user-name">Username</label>
+        <input type="text" id="user-name-name" name="user-name" required>
+
+
+        <label for="email">Email (Optional)</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com">
+
+        <label for="address">Address</label>
+        <input type="text" id="address" name="address" placeholder="1234 Main St" required>
+
+        <label for="address2">Address 2 (Optional)</label>
+        <input type="text" id="address2" name="address2" placeholder="Apartment or suite">
+
+        <label for="country">Country</label>
+        <select id="country" name="country" >
+            <option value="India">India</option>
+            <option value="us">US</option>
+            <!-- Add more options here -->
+        </select>
+
+        <label for="state">State</label>
+        <input type="text" id="state" placeholder="state" required>
+
+        <label for="zip">Zip</label>
+        <input type="text" id="zip" name="zip" required>
+
+       
+        <label>
+            <input class="check" type="checkbox" id="same-address" name="same-address">Shipping address is the same as my billing address
+        </label>
+
+        <label>
+            <input class="check" type="checkbox" id="same-address" name="same-address">Save this information for next time
+        </label>
+
+        <h2>Payment</h2>
+        <!-- Radio buttons for payment options -->
+    <label>
+        <input type="radio" name="payment-option" value="credit-card"> Credit Card
+    </label>
+    <label>
+        <input type="radio" name="payment-option" value="debit-card"> Debit Card
+    </label>
+    <label>
+        <input type="radio" name="payment-option" value="paypal"> Paypal
+    </label><br>
+    <div class="single-row">
+    <div class="input-container">
+        <label for="card-name">Name on card</label>
+        <input type="text" id="card-name" name="card-name" required>
+    </div>
+</div>
+    <div class="single-colummn">
+    <div class="input-container">
+        <label for="card-number">Credit card number</label>
+        <input type="text" id="card-number" name="card-number" required>
+    </div>
+</div>
+    
+    <div class="input-container">
+        <label>Expiration</label>
+        <input type="text" id="expiration" name="expiration" required>
+    </div>
+    
+    <div class="input-container">
+        <label for="cvv">CVV</label>
+        <input type="text" id="cvv" name="cvv" required>
+    </div>
+
+        <button type="submit">Continue to checkout</button>
+    </form>
+</body>
+</html>
