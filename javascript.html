@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Data</title>
+<style>
+ table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #f2f4cd;
+    margin-top: 20px;
+    
+  }
+  thead{
+    background-color: rgb(206, 206, 239);
+    color: rgb(0, 0, 0);
+  }
+  th, td {
+    border: 1px solid #050000;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+  }
+  td{
+    background-color: white;
+  }
+  input[type="text"], select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    box-sizing: border-box;
+  }
+  #submit-btn, #clear-btn {
+    padding: 10px 20px;
+    border: none;
+    color: white;
+  }
+  .error-message {
+    color: red;
+  }
+  .data-container {
+    background-color: #dbe1e7;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+  }
+  #clear-table-btn {
+  display: none;
+}
+.edit-btn, .delete-btn, .update-btn, .cancel-btn {
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  .edit-btn {
+    background-color: #007bff; /* Blue color for Edit button */
+  }
+
+  .delete-btn {
+    background-color: #dc3545; /* Red color for Delete button */
+  }
+
+  .update-btn {
+    background-color: #28a745; /* Green color for Update button */
+  }
+
+  .center{
+    text-align: center;
+  }
+
+  .cancel-btn {
+    background-color: #6c757d; /* Gray color for Cancel button */
+  }
+  #search-btn {
+  background-color: #28a745; /* Green color for Search button */
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+#cancel-btn {
+  background-color: #dc3545; /* Red color for Cancel button */
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  margin-left: 10px;
+  cursor: pointer;
+}
+#no-row-found {
+  display: table-row; /* Ensure this is set to show the row */
+  /* Other styling properties if needed */
+}
+
+</style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="col-md-3 mx-auto"> <!-- Use col-md-6 to create a container that occupies half the available width and mx-auto for center alignment -->
+            <h3 class="p-2 bg-warning text-dark rounded-pill center"  style="font-size: 2rem ";>Result Table</h3>
+        </div>
+    </div>
+    <div class="container mt-5">
+    <form id="student-form">
+    <div class="container data-container">
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter name" required> 
+            <div class="error-message" id="name-error"></div>  
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="register-no">Register No:</label>
+            <input type="text" id="register-no" name="registerNo" placeholder="Enter register-no" required>
+            <div class="error-message" id="register-no-error"></div>  
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="grade">Grade:</label>
+            <input type="text" id="grade" name="Grade" placeholder="Enter grade" required>
+            <div class="error-message" id="grade-error"></div>
+        </div>
+    </div>
+</div>
+<br>
+        <button class="btn-success " type="button" id="submit-btn">Submit Data</button>
+        <button class="btn-danger " type="button" id="clear-btn">Clear</button>
+            <table id="data-table">
+        <thead>
+        </thead>
+        <tbody>
+        <tr id="no-row-found" style="display: none;">
+        <td colspan="6">No match found.</td>
+      </tr>
+    </tbody>
+    </table>
+    <br>
+<button class="button-success" type="button" id="clear-table-btn">Clear Table</button>
+<br>
+    <input type="text" id="search" class="form-control" placeholder="Search by name, register-no, or grade">
+    <button type="button" id="search-btn">Search</button>
+    <button type="button" id="cancel-btn">Cancel</button>
+</div>
+<div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("student-form");
+      const dataTable = document.getElementById("data-table");
+      const searchInput = document.getElementById("search");
+      const searchBtn = document.getElementById("search-btn");
+      const clearTableBtn = document.getElementById("clear-table-btn");
+      const tableHead = dataTable.querySelector("thead"); // Define tableHead properly
+      const tableBody = dataTable.querySelector("tbody");
+        const submitBtn = document.getElementById("submit-btn");
+        const clearBtn = document.getElementById("clear-btn");
+    
+      let data = [];
+    
+      function updateSerialNumbers() {
+        const rows = dataTable.querySelectorAll("tbody tr");
+        rows.forEach((row, index) => {
+          const serialNumberCell = row.querySelector(".serial-number");
+          if (serialNumberCell) {
+            serialNumberCell.textContent = index + 1;
+          }
+        });
+      }
+    
+      // Add these lines after the search button event listener setup
+    
+    const cancelBtn = document.getElementById("cancel-btn");
+    cancelBtn.addEventListener("click", function () {
+      searchInput.value = ""; // to clear the search input
+      updateTable(); // Display the original data
+    });
+    
+    // Attach a single event listener to the data table
+    dataTable.addEventListener("click", function (event) {
+      if (event.target.classList.contains("edit-btn")) {
+        const index = parseInt(event.target.getAttribute("data-index"));
+        const selectedItem = data[index];
+    
+        const row = event.target.parentNode.parentNode; // to get the parent row
+        const cells = row.querySelectorAll("td");
+    
+        // Stores the original content of the cells ,excluding serial number
+        const originalContent = {
+          name: cells[1].textContent,
+          registerNo: cells[2].textContent,
+          grade: cells[3].textContent,
+        };
+    
+        // Rest of the existing edit functionality code
+      }
+    });
+    
+    let currentSortOrder = "asc"; // Default to ascending order
+    
+    tableHead.addEventListener("click", function (event) {
+      if (event.target.classList.contains("sortable")) {
+        const column = event.target.getAttribute("data-column");
+        
+        // Toggle the sort order when clicking on the header
+        if (currentSortOrder === "asc") {
+          currentSortOrder = "desc";
+        } else {
+          currentSortOrder = "asc";
+        }
+    
+        const sortedData = sortData(data, column, currentSortOrder);
+        updateTable(sortedData);
+      }
+    });
+    
+      submitBtn.addEventListener("click", function () {
+        const name = document.getElementById("name").value;
+        const registerNo = document.getElementById("register-no").value;
+        const grade = document.getElementById("grade").value;
+    
+        // Clear existing error messages
+        const errorMessages = document.querySelectorAll(".error-message");
+        errorMessages.forEach((errorMessage) => {
+          errorMessage.textContent = "";
+        });
+    
+        let focusSet = false; // Track whether focus has been set
+    
+        if (!name) {
+          document.getElementById("name-error").textContent = "Name is required.";
+          if (!focusSet) {
+            document.getElementById("name").focus();
+            focusSet = true;
+          }
+        }
+        if (!registerNo) {
+          document.getElementById("register-no-error").textContent = "Register No is required.";
+          if (!focusSet) {
+            document.getElementById("register-no").focus();
+            focusSet = true;
+          }
+        }
+        if (!grade) {
+          document.getElementById("grade-error").textContent = "Grade is required.";
+          if (!focusSet) {
+            document.getElementById("grade").focus();
+            focusSet = true;
+          }
+        }
+    
+        if (!focusSet) {
+          // All fields are filled, proceed with the submission
+          data.push({ name, registerNo, grade });
+          updateTable();
+          clearForm();
+        }
+      });
+    
+      clearBtn.addEventListener("click", function () {
+        clearForm();
+      });
+    
+      clearTableBtn.addEventListener("click", function () {
+        data = [];
+        updateTable();
+      });
+    
+      searchBtn.addEventListener("click", function () {
+      const searchTerm = searchInput.value.toLowerCase();
+      const filteredData = data.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchTerm) ||
+          item.registerNo.toLowerCase().includes(searchTerm) ||
+          item.grade.toLowerCase().includes(searchTerm)
+      );
+    
+      if (filteredData.length > 0) {
+        updateTable(filteredData);
+      } else {
+        // Display "No row found" message with column headings
+        tableHead.innerHTML = `
+          <tr>
+            <th class="sortable" data-column="serialNo">Serial No</th>
+            <th class="sortable" data-column="name">Name <span class="sort-arrow"></span></th>
+            <th class="sortable" data-column="registerNo">Register Number <span class="sort-arrow"></span></th>
+            <th class="sortable" data-column="grade">Grade <span class="sort-arrow"></span></th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        `;
+        tableBody.innerHTML = `
+          <tr id="no-row-found">
+            <td colspan="6">No row found</td>
+          </tr>
+        `;
+        clearTableBtn.style.display = "none"; // Hide the "Clear Table" button
+      }
+    });
+    
+    
+      function clearForm() {
+        document.getElementById("name").value = "";
+        document.getElementById("register-no").value = "";
+        document.getElementById("grade").value = "";
+      }
+    
+      
+      function updateTable(updatedData = data) {
+        const tableHead = dataTable.querySelector("thead");
+      const tableBody = dataTable.querySelector("tbody");
+      
+      // Update the table header based on the number of rows
+    if (updatedData.length > 0) {
+      tableHead.innerHTML = `
+        <tr>
+            <th class="sortable" data-column="serialNo">Serial No</th>
+    <th class="sortable" data-column="name">Name <span class="sort-arrow"></span></th>
+    <th class="sortable" data-column="registerNo">Register Number <span class="sort-arrow"></span></th>
+    <th class="sortable" data-column="grade">Grade <span class="sort-arrow"></span></th>
+    <th>Edit</th>
+    <th>Delete</th>
+        </tr>
+      `;
+    } else {
+      tableHead.innerHTML = ''; // Clear the table header
+    }
+    
+    
+        const sortedData = sortData(updatedData);
+        tableBody.innerHTML = "";
+    
+        // Check if there are any rows in the table body
+        const rowsExist = sortedData.length > 0;
+    
+        if (rowsExist) {
+          clearTableBtn.style.display = "block"; // Show the button
+        } else {
+          clearTableBtn.style.display = "none"; // Hide the button
+        }
+        
+        sortedData.forEach((item, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td class="serial-number">${index + 1}</td>
+            <td>${item.name}</td>
+            <td>${item.registerNo}</td>
+            <td>${item.grade}</td>
+            <td><button class="edit-btn" data-index="${data.indexOf(item)}">Edit</button></td>
+            <td><button class="delete-btn" data-index="${data.indexOf(item)}">Delete</button></td>
+          `;
+          tableBody.appendChild(row);
+        });
+    
+        const editBtns = document.querySelectorAll(".edit-btn");
+        const deleteBtns = document.querySelectorAll(".delete-btn");
+    
+      editBtns.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const index = parseInt(btn.getAttribute("data-index"));
+          const selectedItem = data[index];
+    
+          const row = btn.parentNode.parentNode; // Get the parent row
+          const cells = row.querySelectorAll("td");
+    
+          // Store the original content of the cells (excluding serial number)
+          const originalContent = {
+            name: cells[1].textContent,
+            registerNo: cells[2].textContent,
+            grade: cells[3].textContent,
+          };
+    
+          // Create input fields for editing (excluding serial number)
+          cells[1].innerHTML = `<input type="text" value="${originalContent.name}" />`;
+          cells[2].innerHTML = `<input type="text" value="${originalContent.registerNo}" />`;
+          cells[3].innerHTML = `<input type="text" value="${originalContent.grade}" />`;
+        //   cells[3].querySelector("select").value = originalContent.grade;
+    
+          // Create Update and Cancel buttons
+          const editCell = cells[4];
+          editCell.innerHTML = `
+            <button class="update-btn">Update</button>
+            <button class="cancel-btn">Cancel</button>
+          `;
+    
+         // Handle Update button
+    const updateBtn = editCell.querySelector(".update-btn");
+    updateBtn.addEventListener("click", function () {
+      const newName = cells[1].querySelector("input").value;
+      const newRegisterNo = cells[2].querySelector("input").value;
+      const newGrade = cells[3].querySelector("input").value;
+    
+      // Ask for confirmation before updating
+      const confirmUpdate = confirm("Are you sure you want to update this record?");
+      if (confirmUpdate) {
+        data[index].name = newName;
+        data[index].registerNo = newRegisterNo;
+        data[index].grade = newGrade;
+        updateTable();
+      }
+    });
+    
+    // Handle Cancel button
+    const cancelBtn = editCell.querySelector(".cancel-btn");
+    cancelBtn.addEventListener("click", function cancelClickHandler() {
+      cells[1].textContent = originalContent.name;
+      cells[2].textContent = originalContent.registerNo;
+      cells[3].textContent = originalContent.grade;
+      editCell.innerHTML = `
+        <button class="edit-btn" data-index="${index}">Edit</button>
+      `;
+    
+      // Reattach the event listener for the "Edit" button
+      attachEditEventListener(editCell);
+    
+      // Update the table with current data
+      updateTable();
+    });
+    // Function to attach the event listener for the "Edit" button
+    function attachEditEventListener(cell) {
+      const editBtn = cell.querySelector(".edit-btn");
+      editBtn.addEventListener("click", function () {
+        const index = parseInt(editBtn.getAttribute("data-index"));
+        const selectedItem = data[index];
+    
+        // Rest of the existing edit functionality code
+      });
+    }
+    
+    // Attach event listeners for initial "Edit" buttons
+    editBtns.forEach((btn) => {
+      attachEditEventListener(btn.parentNode);
+    });
+    
+        });
+      });
+    
+        deleteBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const index = parseInt(btn.getAttribute("data-index"));
+            const confirmDelete = confirm("Are you sure you want to delete?");
+            if (confirmDelete) {
+              data.splice(index, 1);
+              updateTable();
+              updateSerialNumbers(); // Update serial numbers after deletion
+            }
+          });
+        });
+      }
+    
+      function sortData(dataArray, column, sortOrder) {
+      const sortedData = [...dataArray];
+      sortedData.sort((a, b) => {
+        const valueA = a[column] ? a[column].toLowerCase() : ''; // Check if a[column] exists
+        const valueB = b[column] ? b[column].toLowerCase() : ''; // Check if b[column] exists
+        if (sortOrder === "asc") {
+          return valueA.localeCompare(valueB);
+        } else {
+          return valueB.localeCompare(valueA);
+        }
+      });
+      return sortedData;
+    }
+    });
+    
+    </script>
+</body>
+</html>
